@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import ToDoList from "./ToDo/ToDoList";
 import DoneList from "./Done/DoneList";
 import Context from "./context";
 import AddToDo from "./ToDo/AddToDo";
 
 function App() {
-  const [todos, setTodos] = React.useState([
+  let [todos, setTodos] = React.useState([
     { id: 1, completed: false, title: "Buy bread" },
     { id: 2, completed: false, title: "Buy milk" },
-    { id: 3, completed: true, title: "Buy orange" },
+    { id: 3, completed: false, title: "Buy orange" },
+  ]);
+
+  let [dones, setDones] = useState([
+    //{ id: 28, completed: true, title: "Done smth 1" },
   ]);
 
   function toggleToDo(id) {
@@ -22,13 +26,14 @@ function App() {
     );
   }
 
-  const dones = [
-    { id: 1, completed: true, title: "Buy bread" },
-    { id: 2, completed: true, title: "Buy milk" },
-  ];
-
   function removeTodo(id) {
     setTodos(todos.filter((todo) => todo.id !== id));
+    todos.map((todo) => {
+      if (todo.completed === true) {
+        dones.push(todo);
+      }
+      return dones;
+    });
   }
 
   function addtodo(title) {
@@ -38,7 +43,7 @@ function App() {
           title,
           id: Date.now(),
           completed: false,
-        }
+        },
       ])
     );
   }
@@ -46,7 +51,6 @@ function App() {
   return (
     <Context.Provider value={{ removeTodo }}>
       <div className="wrapper">
-        <h1>Hello, world!</h1>
         <h2>To do</h2>
         <AddToDo onCreate={addtodo} />
         {todos.length ? (
@@ -54,8 +58,13 @@ function App() {
         ) : (
           <p>You don't have to do.</p>
         )}
+
         <h2>Done</h2>
-        <DoneList dones={dones} />
+        {dones.length ? (
+          <DoneList dones={dones} />
+        ) : (
+          <p>You haven't done anything yet.</p>
+        )}
       </div>
     </Context.Provider>
   );
